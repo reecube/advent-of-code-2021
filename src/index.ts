@@ -25,17 +25,23 @@ async function solve(day: any, part: any, debug: boolean): Promise<void> {
   for (const test of solution.tests) {
     testCounter += 1;
 
+    const baseTestName = `Test ${testCounter}`;
+    const testName = test.name ? `${baseTestName} ${test.name}` : baseTestName;
+
     try {
       const parsedInput = solution.parse(test.input);
 
       const output = solution.solve(parsedInput);
 
-      if (output === test.expected) continue;
+      if (output === test.expected) {
+        console.error(`- Success: ${testName} passed. ✅`);
+        continue;
+      }
 
-      console.error(`- AssertionError: Test ${testCounter} '${test.name ?? ''}' failed!`);
+      console.error(`- AssertionError: ${testName} failed! ❌`);
       console.error(`  Expected '${test.expected}', got '${output}'.`);
     } catch (e) {
-      console.error(`- ERROR: Test ${testCounter} '${test.name ?? ''}' failed!`);
+      console.error(`- ERROR: ${testName} failed! ❌`);
       console.error(e);
     }
   }
