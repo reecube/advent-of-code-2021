@@ -1,5 +1,6 @@
 import { Test } from '../../model/Test';
 import { Result } from '../../model/Result';
+import { verbose } from '../../helper/logger';
 
 const DEBUG = false;
 
@@ -10,9 +11,9 @@ const maxLength = DAYS.toString().length;
 function debug(label: string, state: number[]) {
   if (!DEBUG) return;
 
-  if (state.length >= 30) return console.log(label, 'length:', state.length);
+  if (state.length >= 30) return verbose(label, 'length:', state.length);
 
-  console.log(label, state.join(','));
+  verbose(label, state.join(','));
 }
 
 export const tests: Test[] = [

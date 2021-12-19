@@ -1,6 +1,7 @@
 import { Test } from '../../model/Test';
 import { Result } from '../../model/Result';
 import { Dictionary } from '../../model/Dictionary';
+import { verbose } from '../../helper/logger';
 
 export const tests: Test[] = [
   // Implemented without TDD
@@ -75,7 +76,7 @@ export function solve(input: string[][]): Result {
       lineScore += entry.points;
     }
 
-    console.log(incomplete.map(it => it.close).join(''), lineScore, 'total points');
+    verbose(incomplete.map(it => it.close).join(''), lineScore, 'total points');
 
     scores.push(lineScore);
   }

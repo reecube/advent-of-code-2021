@@ -1,6 +1,7 @@
 import { Test } from '../../model/Test';
 import { Result } from '../../model/Result';
 import { Move } from './model';
+import { verbose } from '../../helper/logger';
 
 const DEBUG = false;
 
@@ -35,7 +36,7 @@ export function solve(input: Move[]): Result {
 
     if (!(x1 === x2 || y1 === y2)) continue;
 
-    if (DEBUG) console.log(x1, y1, '->', x2, y2);
+    verbose(x1, y1, '->', x2, y2);
 
     const diffX = x2 - x1;
     const diffY = y2 - y1;
@@ -83,7 +84,7 @@ export function solve(input: Move[]): Result {
     lines.push(line.join(''));
   }
 
-  console.log(lines.join('\n'));
+  verbose(lines.join('\n'));
 
   return overlaps;
 }

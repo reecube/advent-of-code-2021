@@ -93,7 +93,7 @@ async function loadAndSolve(day: any, part: any): Promise<void> {
   const argPart = process.argv.length > 3 ? parseInt(process.argv[3]) : 0;
 
   if (argDay && argPart) {
-    (global as any).debug = true;
+    (global as any).verbose = true;
 
     await loadAndSolve(argDay, argPart);
 

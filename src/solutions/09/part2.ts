@@ -1,5 +1,6 @@
 import { Test } from '../../model/Test';
 import { Result } from '../../model/Result';
+import { verbose } from '../../helper/logger';
 
 export const tests: Test[] = [
   // Implemented without TDD
@@ -92,12 +93,12 @@ export function solve(input: number[][]): Result {
 
     basins.push(basin);
 
-    console.log(localLow.x, localLow.y, basin);
+    verbose(localLow.x, localLow.y, basin);
   }
 
   basins.sort((a, b) => b - a);
 
-  console.log(basins);
+  verbose(basins);
 
   let result = 1;
 

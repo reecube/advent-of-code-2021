@@ -1,6 +1,7 @@
 import { Test } from '../../model/Test';
 import { Result } from '../../model/Result';
 import { BingoBoard, BoardCell } from './model';
+import { verbose } from '../../helper/logger';
 
 const BOARD_SIZE = 5;
 
@@ -107,7 +108,7 @@ export function solve(input: string[]): Result {
     }
   }
 
-  console.log(winner, sum);
+  verbose(winner, sum);
 
   return sum * (winner.instruction || 0);
 }

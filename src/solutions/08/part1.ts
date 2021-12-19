@@ -2,8 +2,7 @@ import { Test } from '../../model/Test';
 import { Result } from '../../model/Result';
 import { Signal } from './model';
 import { Dictionary } from '../../model/Dictionary';
-
-const DEBUG = false;
+import { verbose } from '../../helper/logger';
 
 export const tests: Test[] = [
   // Implemented without TDD
@@ -52,7 +51,7 @@ export function solve(input: Signal[]): Result {
 
     const filtered = ovValue.filter(it => it !== '?');
 
-    if (DEBUG) console.log(ovValue.join(''), filtered.join(''));
+    verbose(ovValue.join(''), filtered.join(''));
 
     totalCount += filtered.length;
   }
