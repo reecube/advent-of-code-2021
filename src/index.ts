@@ -4,7 +4,7 @@ const fs = require('fs');
 
 async function solve(day: any, part: any, debug: boolean): Promise<void> {
   if (typeof day !== 'number' || day < 0 || day > 24) throw new Error('Invalid input day!');
-  if (typeof part !== 'number' || day < 0 || day > 2) throw new Error('Invalid input part!');
+  if (typeof part !== 'number' || part < 0 || part > 2) throw new Error('Invalid input part!');
 
   const dayFixed = day.toString().padStart(2, '0');
 
