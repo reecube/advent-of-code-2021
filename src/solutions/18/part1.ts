@@ -68,7 +68,7 @@ export function solve(input: ComplexNestedArray): Result {
   for (const line of input) {
     result += magnitude(line);
   }
-  
+
   // TODO: Implement this
 
   return result;
