@@ -2,48 +2,37 @@ import { Solution } from '../model/Solution';
 import { Test } from '../model/Test';
 import { Result } from '../model/Result';
 
-interface Item {
-  readonly direction: string;
-  readonly amount: number;
-}
-
-export default class DefaultSolution implements Solution<Item[]> {
+export default class DefaultSolution implements Solution<number[][]> {
   readonly tests: Test[] = [
     // Implemented without TDD
   ];
 
-  parse(input: string): Item[] {
-    return input.split('\n').filter(it => it.length).map(it => {
-      const parts = it.split(' ');
-      return { direction: parts[0], amount: parseInt(parts[1]) };
-    });
+  parse(input: string): number[][] {
+    return input
+      .split('\n')
+      .filter(it => it.length)
+      .map(
+        line => line.split('').map(it => parseInt(it)),
+      );
   }
 
-  solve(input: Item[]): Result {
-    let v = 0;
-    let h = 0;
-    let aim = 0;
+  solve(input: number[][]): Result {
+    const sum = input[0].map(() => 0);
 
-    for (const item of input) {
-      const amount = item.amount;
-      switch (item.direction) {
-        case 'forward':
-          h += amount;
-          v += aim * amount;
-          break;
-        case 'up':
-          aim -= amount;
-          break;
-        case 'down':
-          aim += amount;
-          break;
-        case '':
-          continue;
-        default:
-          throw new Error(`Unexpected direction '${item.direction}'!`);
+    input.forEach(item => {
+      for (let i = 0; i < sum.length; i++) {
+        sum[i] += item[i];
       }
-    }
+    });
 
-    return v * h;
+    const max = Math.floor(input.length / 2);
+
+    const gamma = sum.map(it => (it >= max) ? 1 : 0).join('');
+    const gammaRate = parseInt(gamma, 2);
+
+    const epsilon = sum.map(it => (it <= max) ? 1 : 0).join('');
+    const epsilonRate = parseInt(epsilon, 2);
+
+    return gammaRate * epsilonRate;
   }
 }
