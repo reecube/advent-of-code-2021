@@ -1,20 +1,36 @@
-import { Solution } from './model/Solution';
+import * as fs from 'fs';
 
-const fs = require('fs');
+function loadOutput(baseDataPath: string, part: number): string {
+  const path = `${baseDataPath}/output${part}.txt`;
 
-async function solve(day: any, part: any, debug: boolean): Promise<void> {
+  if (!fs.existsSync(path)) return '';
+
+  return fs.readFileSync(path).toString().trim();
+}
+
+async function loadAndSolve(day: any, part: any): Promise<void> {
   if (typeof day !== 'number' || day < 0 || day > 24) throw new Error('Invalid input day!');
   if (typeof part !== 'number' || part < 0 || part > 2) throw new Error('Invalid input part!');
 
   const dayFixed = day.toString().padStart(2, '0');
 
-  const importPath = `./solutions/Day${dayFixed}${part}`;
-  const importData = await import(importPath);
-  const importConstructors: any[] = Object.values(importData).filter(it => typeof it === 'function');
+  const importPath = `./solutions/${dayFixed}`;
+  const parseInputImportData = await import(`${importPath}/parseInput`);
+  const partImportData = await import(`${importPath}/part${part}`);
 
-  if (!importConstructors.length) throw new Error(`Invalid import file '${importPath}'!`);
+  if (typeof parseInputImportData?.parseInput !== 'function') throw new Error(
+    `Invalid parseInput file for day ${day}!`,
+  );
+  if (typeof partImportData?.tests !== 'object') throw new Error(
+    `Invalid part file for day ${day}:${part}! Tests invalid.`,
+  );
+  if (typeof partImportData?.solve !== 'function') throw new Error(
+    `Invalid part file for day ${day}:${part}! Solve function invalid.`,
+  );
 
-  const solution: Solution<any> = new importConstructors[0](debug);
+  const parseInput = parseInputImportData.parseInput;
+  const tests = partImportData.tests;
+  const solve = partImportData.solve;
 
   // Solve with tests
 
@@ -22,16 +38,16 @@ async function solve(day: any, part: any, debug: boolean): Promise<void> {
   console.log(`Test day ${day}:`);
 
   let testCounter = 0;
-  for (const test of solution.tests) {
+  for (const test of tests) {
     testCounter += 1;
 
     const baseTestName = `Test ${testCounter}`;
     const testName = test.name ? `${baseTestName} ${test.name}` : baseTestName;
 
     try {
-      const parsedInput = solution.parse(test.input);
+      const parsedInput = parseInput(test.input);
 
-      const output = solution.solve(parsedInput);
+      const output = solve(parsedInput);
 
       if (output === test.expected) {
         console.error(`- Success: ${testName} passed. ✅`);
@@ -50,18 +66,25 @@ async function solve(day: any, part: any, debug: boolean): Promise<void> {
 
   // Solve with real input data
 
-  const dataInputPath = `./src/data/${dayFixed}.txt`;
+  const baseDataPath = `./src/data/${dayFixed}`;
+  const dataInputPath = `${baseDataPath}/input.txt`;
 
   if (!fs.existsSync(dataInputPath)) throw new Error(`Input data missing for day '${dayFixed}'!`);
 
+  const expected = loadOutput(baseDataPath, part);
+
   const realInput = fs.readFileSync(dataInputPath).toString();
 
-  const realInputParsed = solution.parse(realInput);
+  const realInputParsed = parseInput(realInput);
 
-  const realOutput = solution.solve(realInputParsed);
+  const realOutput = solve(realInputParsed);
 
+  if (expected && expected != realOutput) {
+    console.error(`SOLUTION day ${day}: AssertionError: expected: '${expected}', got '${realOutput}'! ❌`);
+  } else {
+    console.log(`SOLUTION day ${day}: '${realOutput}' ${expected ? '✅' : ''}`);
+  }
   console.log();
-  console.log(`SOLUTION day ${day}: '${realOutput}'`);
   console.log();
 }
 
@@ -70,7 +93,9 @@ async function solve(day: any, part: any, debug: boolean): Promise<void> {
   const argPart = process.argv.length > 3 ? parseInt(process.argv[3]) : 0;
 
   if (argDay && argPart) {
-    await solve(argDay, argPart, true);
+    (global as any).debug = true;
+
+    await loadAndSolve(argDay, argPart);
 
     return;
   }
@@ -79,7 +104,7 @@ async function solve(day: any, part: any, debug: boolean): Promise<void> {
 
   if (argDay) {
     for (const part of parts) {
-      await solve(argDay, part, false);
+      await loadAndSolve(argDay, part);
     }
 
     return;
@@ -87,7 +112,7 @@ async function solve(day: any, part: any, debug: boolean): Promise<void> {
 
   for (let day = 1; day <= 24; day++) {
     for (const part of parts) {
-      await solve(day, part, false);
+      await loadAndSolve(day, part);
     }
   }
 })();
